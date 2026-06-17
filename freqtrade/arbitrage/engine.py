@@ -118,6 +118,23 @@ class ArbEngine:
         # 5. Scan for new opportunities
         opportunities = self.scanner.scan_all()
 
+        # Log scan results
+        if opportunities:
+            logger.info(
+                "Scan: %d opportunities | Top: %s short@%s(%.4f%%) long@%s(%.4f%%) "
+                "diff=%.4f%% basis=%.4f%% quickP=%.4f%% basisP=%.4f%%",
+                len(opportunities),
+                opportunities[0].symbol,
+                opportunities[0].exchange_short,
+                opportunities[0].funding_rate_short * 100,
+                opportunities[0].exchange_long,
+                opportunities[0].funding_rate_long * 100,
+                opportunities[0].funding_rate_diff * 100,
+                opportunities[0].basis_rate * 100,
+                opportunities[0].quick_profit * 100,
+                opportunities[0].basis_profit * 100,
+            )
+
         for opp in opportunities:
             # Risk check
             ok, reason = self.risk.can_open(open_trades, opp.symbol)
