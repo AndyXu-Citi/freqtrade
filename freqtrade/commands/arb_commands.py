@@ -42,9 +42,13 @@ def start_arb(args: dict[str, Any]) -> int:
     # Initialize exchange connections
     logger.info("Initializing %d exchange connections...", len(arb_config.exchanges))
     exchanges = {}
+    original_exchange_name = config.get("exchange", {}).get("name", "")
     for ex_conf in arb_config.exchanges:
         ex_name = ex_conf["name"]
         try:
+            # ExchangeResolver reads exchange name from config["exchange"]["name"],
+            # so we temporarily override it for each arbitrage exchange.
+            config.setdefault("exchange", {})["name"] = ex_name
             exchanges[ex_name] = ExchangeResolver.load_exchange(
                 config, exchange_config=ex_conf, validate=True
             )
@@ -52,6 +56,8 @@ def start_arb(args: dict[str, Any]) -> int:
         except Exception as e:
             logger.error("Failed to connect to %s: %s", ex_name, e)
             return 1
+    # Restore original exchange name
+    config["exchange"]["name"] = original_exchange_name
 
     # Scan-only mode
     if args.get("scan_only"):
