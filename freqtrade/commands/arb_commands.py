@@ -66,7 +66,7 @@ def start_arb(args: dict[str, Any]) -> int:
     config["exchange"]["name"] = original_exchange_name
 
     # Scan-only mode
-    if args.get("scan_only"):
+    if args.get("arb_scan_only"):
         return _run_scan_only(exchanges, arb_config)
 
     # Full arbitrage engine (Phase 3)
