@@ -1,0 +1,9 @@
+FROM freqtradeorg/freqtrade:stable
+
+# 复制套利模块和修改的文件
+COPY --chown=ftuser:ftuser freqtrade/arbitrage /freqtrade/freqtrade/arbitrage
+COPY --chown=ftuser:ftuser freqtrade/commands/arb_commands.py /freqtrade/freqtrade/commands/arb_commands.py
+COPY --chown=ftuser:ftuser freqtrade/commands/__init__.py /freqtrade/freqtrade/commands/__init__.py
+COPY --chown=ftuser:ftuser freqtrade/commands/arguments.py /freqtrade/freqtrade/commands/arguments.py
+COPY --chown=ftuser:ftuser freqtrade/commands/cli_options.py /freqtrade/freqtrade/commands/cli_options.py
+COPY --chown=ftuser:ftuser freqtrade/persistence/models.py /freqtrade/freqtrade/persistence/models.py
