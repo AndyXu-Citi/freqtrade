@@ -21,6 +21,12 @@ def start_arb(args: dict[str, Any]) -> int:
 
     config = setup_utils_configuration(args, RunMode.UTIL_EXCHANGE, set_dry=False)
 
+    # Initialize database (required for ArbTrade.session)
+    from freqtrade.persistence.models import init_db
+
+    db_url = config.get("db_url", "sqlite:///arb_trades.sqlite")
+    init_db(db_url)
+
     arb_conf_dict = config.get("arb", {})
     if not arb_conf_dict:
         logger.error(
