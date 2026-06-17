@@ -438,10 +438,17 @@ class ArbExecutor:
     def _get_available_balance(self, exchange_name: str) -> float | None:
         """
         Get available USDT balance on an exchange.
+        In dry-run mode, returns the configured dry_run_wallet value.
         """
         exchange = self.exchanges.get(exchange_name)
         if not exchange:
             return None
+
+        # In dry-run mode, use the configured wallet value
+        if exchange._config.get("dry_run", False):
+            wallet = float(exchange._config.get("dry_run_wallet", 10000))
+            logger.info("[dry-run] Using wallet balance: %s USDT on %s", wallet, exchange_name)
+            return wallet
 
         try:
             balances = exchange.get_balances()
