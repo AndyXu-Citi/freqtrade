@@ -356,9 +356,19 @@ class ArbExecutor:
         min_short = float(market_short.get("limits", {}).get("amount", {}).get("min", 0))
         min_long = float(market_long.get("limits", {}).get("amount", {}).get("min", 0))
 
-        # Calculate raw amounts from USDT value
-        price_short = float(market_short.get("last", 0) or market_short.get("close", 0))
-        price_long = float(market_long.get("last", 0) or market_long.get("close", 0))
+        # Get current prices from tickers (markets only has static info)
+        price_short = 0.0
+        price_long = 0.0
+        try:
+            ticker_short = ex_short.fetch_ticker(symbol)
+            price_short = float(ticker_short.get("last", 0))
+        except Exception as e:
+            logger.warning("Failed to get ticker from %s for %s: %s", ex_short.name, symbol, e)
+        try:
+            ticker_long = ex_long.fetch_ticker(symbol)
+            price_long = float(ticker_long.get("last", 0))
+        except Exception as e:
+            logger.warning("Failed to get ticker from %s for %s: %s", ex_long.name, symbol, e)
 
         if price_short <= 0 or price_long <= 0:
             logger.error("Price not available: short=%s long=%s", price_short, price_long)
