@@ -34,7 +34,7 @@ ARGS_STRATEGY = [
 
 ARGS_TRADE = ["db_url", "sd_notify", "dry_run", "dry_run_wallet", "fee"]
 
-ARGS_ARB = ["db_url", "arb_scan_only"]
+ARGS_ARB = ["db_url", "arb_scan_only", "arb_test_trade"]
 
 ARGS_WEBSERVER: list[str] = []
 

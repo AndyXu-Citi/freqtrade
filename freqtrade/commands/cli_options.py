@@ -854,4 +854,10 @@ AVAILABLE_CLI_OPTIONS = {
         action="store_true",
         default=False,
     ),
+    "arb_test_trade": Arg(
+        "--test-trade",
+        help="Force open one test trade on the top opportunity, then exit.",
+        action="store_true",
+        default=False,
+    ),
 }

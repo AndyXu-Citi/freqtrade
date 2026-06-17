@@ -69,6 +69,10 @@ def start_arb(args: dict[str, Any]) -> int:
     if args.get("arb_scan_only"):
         return _run_scan_only(exchanges, arb_config)
 
+    # Test trade mode
+    if args.get("arb_test_trade"):
+        return _run_test_trade(exchanges, arb_config, config)
+
     # Full arbitrage engine (Phase 3)
     logger.info("Starting arbitrage engine...")
     from freqtrade.arbitrage.engine import ArbEngine
@@ -122,3 +126,46 @@ def _run_scan_only(exchanges: dict, arb_config) -> int:
     print(f"  Basis profit: {top.basis_profit*100:.4f}%")
 
     return 0
+
+
+def _run_test_trade(exchanges: dict, arb_config, config: dict) -> int:
+    """
+    Test trade mode: force open one trade on the top opportunity.
+    """
+    from freqtrade.arbitrage.executor import ArbExecutor
+    from freqtrade.arbitrage.models import ArbTrade
+    from freqtrade.arbitrage.scanner import ArbScanner
+
+    scanner = ArbScanner(exchanges, arb_config)
+    opportunities = scanner.scan_all()
+
+    if not opportunities:
+        print("No opportunities found.")
+        return 1
+
+    top = opportunities[0]
+    print(f"\nForce opening test trade:")
+    print(f"  Pair: {top.symbol}")
+    print(f"  Short: {top.exchange_short} @ {top.price_short}")
+    print(f"  Long:  {top.exchange_long} @ {top.price_long}")
+    print(f"  Funding rate diff: {top.funding_rate_diff*100:.4f}%")
+    print()
+
+    executor = ArbExecutor(exchanges, arb_config)
+    arb_trade = executor.execute_open(top, "quick")
+
+    if arb_trade:
+        print(f"Trade opened successfully!")
+        print(f"  ArbTrade ID: {arb_trade.id}")
+        print(f"  Short: {arb_trade.exchange_short} amount={arb_trade.amount_short}")
+        print(f"  Long:  {arb_trade.exchange_long} amount={arb_trade.amount_long}")
+
+        # Send Telegram notification
+        from freqtrade.arbitrage.notifier import ArbNotifier
+        notifier = ArbNotifier(config)
+        notifier.notify_open(arb_trade, top)
+
+        return 0
+    else:
+        print("Failed to open trade.")
+        return 1
