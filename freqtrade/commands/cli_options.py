@@ -848,4 +848,10 @@ AVAILABLE_CLI_OPTIONS = {
         action="store_true",
         default=False,
     ),
+    "arb_scan_only": Arg(
+        "--scan-only",
+        help="Scan for arbitrage opportunities without trading. Print results and exit.",
+        action="store_true",
+        default=False,
+    ),
 }

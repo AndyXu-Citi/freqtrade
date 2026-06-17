@@ -14,6 +14,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from freqtrade.exceptions import OperationalException
+from freqtrade.arbitrage.models import ArbTrade
 from freqtrade.persistence.base import ModelBase
 from freqtrade.persistence.custom_data import _CustomData
 from freqtrade.persistence.key_value_store import _KeyValueStoreModel
@@ -93,6 +94,7 @@ def init_db(db_url: str) -> None:
         sessionmaker(bind=engine, autoflush=True), scopefunc=get_request_or_thread_id
     )
     WalletHistory.session = Trade.session
+    ArbTrade.session = Trade.session
 
     previous_tables = inspect(engine).get_table_names()
     ModelBase.metadata.create_all(engine)

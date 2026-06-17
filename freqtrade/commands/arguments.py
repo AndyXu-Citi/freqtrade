@@ -34,6 +34,8 @@ ARGS_STRATEGY = [
 
 ARGS_TRADE = ["db_url", "sd_notify", "dry_run", "dry_run_wallet", "fee"]
 
+ARGS_ARB = ["db_url", "arb_scan_only"]
+
 ARGS_WEBSERVER: list[str] = []
 
 ARGS_COMMON_OPTIMIZE = [
@@ -384,6 +386,7 @@ class Arguments:
 
         from freqtrade.commands import (
             start_analysis_entries_exits,
+            start_arb,
             start_backtesting,
             start_backtesting_show,
             start_convert_data,
@@ -430,6 +433,15 @@ class Arguments:
         )
         trade_cmd.set_defaults(func=start_trading)
         self._build_args(optionlist=ARGS_TRADE, parser=trade_cmd)
+
+        # Add arb subcommand
+        arb_cmd = subparsers.add_parser(
+            "arb",
+            help="Cross-exchange funding rate arbitrage.",
+            parents=[_common_parser],
+        )
+        arb_cmd.set_defaults(func=start_arb)
+        self._build_args(optionlist=ARGS_ARB, parser=arb_cmd)
 
         # add create-userdir subcommand
         create_userdir_cmd = subparsers.add_parser(
